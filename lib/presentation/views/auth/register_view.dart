@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:forms/presentation/blocs/register/register_cubit.dart';
 
 import 'package:forms/presentation/widgets/widgets.dart';
 
@@ -43,14 +45,12 @@ class _RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<_RegisterForm> {
 
-  String username = '';
-  String email = '';
-  String password = '';
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
 
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final registerCubit = context.watch<RegisterCubit>();
 
     return Form(
       key: _formKey,
@@ -60,7 +60,10 @@ class _RegisterFormState extends State<_RegisterForm> {
            CustomTextFormField(
             label: 'Username',
             prefixIcon: const Icon( Icons.person ),
-            onChanged: (value) => username = value,
+            onChanged: (value) {
+              registerCubit.onUsernameChanged(value);
+              _formKey.currentState!.validate();
+            },
             isRequired: true,
           ),
 
@@ -69,7 +72,10 @@ class _RegisterFormState extends State<_RegisterForm> {
            CustomTextFormField(
             label: 'Email',
             prefixIcon: const Icon( Icons.alternate_email ),
-            onChanged: (value) => email = value,
+            onChanged: (value) {
+              registerCubit.onEmailChanged(value);
+              _formKey.currentState!.validate();
+            },
             isRequired: true,
           ),
 
@@ -79,7 +85,10 @@ class _RegisterFormState extends State<_RegisterForm> {
             label: 'Password',
             obscureText: true,
             prefixIcon: const Icon( Icons.lock_outline_rounded ),
-            onChanged: (value) => password = value,
+            onChanged: (value) {
+              registerCubit.onPasswordChanged(value);
+              _formKey.currentState!.validate();
+            },
             isRequired: true,
           ),
 
@@ -88,11 +97,8 @@ class _RegisterFormState extends State<_RegisterForm> {
           FilledButton.tonalIcon(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                print('is valid');
-                return;
+                registerCubit.onSubmit();
               }
-
-              print('invalid form');
             },
             icon: const Icon( Icons.save ),
             label: const Text('Create user'),
