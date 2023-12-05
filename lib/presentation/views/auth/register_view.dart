@@ -34,37 +34,27 @@ class RegisterView extends StatelessWidget {
   }
 }
 
-class _RegisterForm extends StatefulWidget {
-
+class _RegisterForm extends StatelessWidget {
 
   const _RegisterForm();
-
-  @override
-  State<_RegisterForm> createState() => _RegisterFormState();
-}
-
-class _RegisterFormState extends State<_RegisterForm> {
-
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
 
     final registerCubit = context.watch<RegisterCubit>();
+    final username = registerCubit.state.username;
+    final password = registerCubit.state.password;
+    final email = registerCubit.state.email;
 
     return Form(
-      key: _formKey,
       child: Column(
         children: [
 
            CustomTextFormField(
             label: 'Username',
             prefixIcon: const Icon( Icons.person ),
-            onChanged: (value) {
-              registerCubit.onUsernameChanged(value);
-              _formKey.currentState!.validate();
-            },
-            isRequired: true,
+            onChanged: registerCubit.onUsernameChanged,
+            errorText: username.errorMessage,
           ),
 
           const SizedBox(height: 10),
@@ -72,11 +62,8 @@ class _RegisterFormState extends State<_RegisterForm> {
            CustomTextFormField(
             label: 'Email',
             prefixIcon: const Icon( Icons.alternate_email ),
-            onChanged: (value) {
-              registerCubit.onEmailChanged(value);
-              _formKey.currentState!.validate();
-            },
-            isRequired: true,
+            onChanged: registerCubit.onEmailChanged,
+            errorText: email.errorMessage,
           ),
 
           const SizedBox(height: 10),
@@ -85,21 +72,14 @@ class _RegisterFormState extends State<_RegisterForm> {
             label: 'Password',
             obscureText: true,
             prefixIcon: const Icon( Icons.lock_outline_rounded ),
-            onChanged: (value) {
-              registerCubit.onPasswordChanged(value);
-              _formKey.currentState!.validate();
-            },
-            isRequired: true,
+            onChanged: registerCubit.onPasswordChanged,
+            errorText: password.errorMessage,
           ),
 
           const SizedBox(height: 20),
 
           FilledButton.tonalIcon(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                registerCubit.onSubmit();
-              }
-            },
+            onPressed: registerCubit.onSubmit,
             icon: const Icon( Icons.save ),
             label: const Text('Create user'),
           ),
